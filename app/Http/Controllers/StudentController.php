@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Student;
+use Illuminate\Support\Facades\Validator; //Harus ditambahkan ketika menggunakan fungsi validator
 
 class StudentController extends Controller
 {
@@ -11,8 +12,8 @@ class StudentController extends Controller
     public function index()
     {
         $students = Student::all();
-
-        if(count($students)!== 0){
+        // isNotEmpty ialah fungsi dari laravel yang bertugas untuk mengecek bahwasanya data tersebut tidak kosong
+        if(!empty($students)){
             $response = [
                 "message" => "Success Showing All Students Data",
                 "data" => $students
@@ -30,39 +31,50 @@ class StudentController extends Controller
     // Menambahkan data
     public function store(Request $request)
     {
-        $input  = [
-            'name' => $request->name ?? "Belum diketahui",
-            'nim' => $request->nim ?? "Belum diketahui",
-            'email' => $request->email ?? "Belum diketahui",
-            'majority' => $request->majority ?? "Belum diketahui"
-        ];
-
-        $cekInput = [];
-
-        foreach($input as $key => $value){
-            if($value == "Belum diketahui"){
-                $cekInput[] = $key; 
-            }
-        }
-        // !empty berfungsi mengecek jika ada data yang kosong setelah pengecekan diatas
-        if(!empty($cekInput)){
-            $response = [
-                "message" => "Data not complete",
-                "missing data" => $cekInput
-            ];
-
-            return response()->json($response, 404);
+        // 1. Cara manual untuk membuat fungsi validasi melalui ORM
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:200',
+            'nim' => 'numeric|required',
+            'email' => 'email|required',
+            'majority' => 'required'
+        ]);
+        // Fungsi fails() adalah fungsi yang mengembalikan nilai error jika data ada yang kosong
+        if ($validator->fails()){
+            return response()->json([
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
         } else {
-            $students = Student::create($input);
+            $students = Student::create($validator);
 
-            $response = [
-                "message" => "Successfully to add data",
-                "data" => $students
-            ];
+            return response()->json([
+                'message' => 'Student is created successfully',
+                'data' => $validator
+            ], 200);
+        } 
+        
+        // 2. Cara otomatis untuk memvalidasi yaitu dengan fungsi validate
+        // $validateData = $request->validate([
+        //     'name' => 'required|max:200',
+        //     'nim' => 'numeric|required',
+        //     'email' => 'email|required',
+        //     'majority' => 'required'
+        // ]);
 
-            return response()->json($response, 200);
+        // If ini masih belum bener, karena sepertinya sudah ada pegecekan diatas pada variabel validateData
+        // if($validateData == false){
+        //     return response()->json([
+        //         'message' => 'Data is not complete'
+        //     ], 404);
+        // }
 
-        }
+        // $students = Student::create($validateData);
+
+        // return response()->json([
+        //     'message' => 'Data successfully to add',
+        //     'data' => $students
+        // ], 404);
+
     }
 
     // Menampilkan salah satu data 
