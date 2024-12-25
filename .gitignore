@@ -1,0 +1,2 @@
+# File ini berisi untuk mengatur file/folder mana saja yang tidak kita ingin push ke github
+node_modules
