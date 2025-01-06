@@ -31,8 +31,8 @@ class StudentController {
       const {nama, nim, email, jurusan} = req.body;
       // Validasi data terisi
       if(!nama | !nim | !email | !jurusan) {
-        // throw new Error("Semua data wajib diisi");
-        res.send("semua data wajib diisi");
+        throw new Error("Semua data wajib diisi");
+        // res.send("semua data wajib diisi");
       }
       await Student.create({nama, nim, email, jurusan});
       const students = await Student.all();
