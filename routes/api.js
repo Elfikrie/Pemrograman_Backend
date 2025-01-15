@@ -8,9 +8,7 @@ router.get("/patients/:id", PasienController.show);
 
 router.get("/patients/search/:name", PasienController.search);
 
-router.get("/patients/status/:Positive", PasienController.statusPasien);
-router.get("/patients/status/:Recovered", PasienController.statusPasien);
-router.get("/patients/status/:Dead", PasienController.statusPasien);
+router.get("/patients/status/:status", PasienController.statusPasien);
 
 router.post("/patients", PasienController.store);
 router.put("/patients/:id", PasienController.update);
