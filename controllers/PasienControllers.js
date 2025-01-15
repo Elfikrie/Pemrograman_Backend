@@ -146,7 +146,7 @@ class PasienController {
     if(pasien){
       const data = {
         message : `Get ${status} Resource`,
-        total : pasien.length,
+        total : `${pasien.length} Orang`,
         data : pasien
       }
       res.json(data).status(200);
